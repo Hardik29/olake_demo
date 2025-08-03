@@ -1,6 +1,6 @@
 
 ## OLake PostgreSQL to Google Cloud Storage via Lakekeeper
-This guide demonstrates syncing data from a PostgreSQL source (filess.io or any managed PG) to Google Cloud Storage in Iceberg format using OLake and Lakekeeper, then querying with Spark on Dataproc.
+This guide demonstrates syncing data from a PostgreSQL source (filess.io or any managed database) to Google Cloud Storage in Iceberg format using OLake and Lakekeeper, then querying with Spark on Dataproc.
 
 ---
 
