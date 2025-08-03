@@ -1,0 +1,9 @@
+{
+  "host": "<your_postgres_host>",
+  "port": "<your_postgres_port>",
+  "username": "<your_postgres_username>",
+  "password": "<your_postgres_password>",
+  "database": "<your_postgres_db>",
+  "default_mode": "cdc",
+  "max_threads": 2
+}

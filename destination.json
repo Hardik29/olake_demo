@@ -1,0 +1,14 @@
+{
+  "type": "ICEBERG",
+  "writer": {
+    "catalog_type": "rest",
+      "rest_catalog_url": "http://host.docker.internal:8181/catalog",
+      "iceberg_s3_path": "olake_warehouse",
+      "iceberg_db": "iceberg_db",
+      "s3_endpoint": "https://storage.googleapis.com",
+      "aws_access_key": "",
+      "aws_secret_key": "",
+      "aws_region": "",
+      "no_identifier_fields": true
+  }
+}
