@@ -77,9 +77,9 @@ This will:
     "iceberg_s3_path": "olake_warehouse",
     "iceberg_db": "iceberg_db",
     "s3_endpoint": "https://storage.googleapis.com",
-    "aws_access_key": "",
-    "aws_secret_key": "",
-    "aws_region": "",
+    "aws_access_key": "", //leave empty for lakehouse
+    "aws_secret_key": "", //leave empty for lakehouse
+    "aws_region": "",     //leave empty for lakehouse
     "no_identifier_fields": true
   }
 }
