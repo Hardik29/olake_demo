@@ -4,6 +4,8 @@ This guide demonstrates syncing data from a PostgreSQL source (filess.io or any 
 
 ---
 
+![alt text](images/diagram.png)
+
 ### 1. Insert Data into filess.io PostgreSQL using Python
 
 Use the provided `sql_insert.py` script to connect to your filess.io Postgres instance, create a schema/table, and insert sample records.
@@ -65,8 +67,8 @@ This will:
 }
 ```
 
-- Create `destination.json` with your Iceberg/Rest Catalog and GCS configuration. Example:
-  (For GCP/Azure, see also https://olake.io/docs/writers/iceberg/azure)
+- Create `destination.json` with your Iceberg/Rest Catalog and GCS/Azure configuration.
+  (For refrence https://olake.io/docs/writers/iceberg/azure)
 
 ```json
 {
@@ -83,22 +85,6 @@ This will:
     "no_identifier_fields": true
   }
 }
-```
-
----
-
-### 3. Check the Connection
-
-Before proceeding, check that your configuration files are valid and the connection works:
-
-```bash
-docker run --rm \
-  -v "/absolute/path/to/config:/mnt/config" \
-  olakego/source-postgres:latest \
-  check \
-  --config /mnt/config/source.json \
-  --catalog /mnt/config/streams.json \
-  --destination /mnt/config/destination.json
 ```
 
 ---
@@ -133,7 +119,7 @@ Direct sync to GCS is not supported, so Lakekeeper is used as an intermediary.
 3. In GCP Console: IAM → Service Accounts → Create Service Account → Manage Keys → Create Key (JSON) → Download and save the key.
 [text](readme.md) ![text](images/gcs.png)
 4. Go to [Lakekeeper UI](http://localhost:8181/ui/warehouse), select GCS, and upload your service account key (as file or paste JSON).
-![alt text](images/image.png)
+![alt text](images/lakekeeper.png)
 5. If you encounter errors, ensure your service account has sufficient permissions related to goggle cloud storage.
 
 ---
@@ -172,3 +158,4 @@ spark = SparkSession.builder \
 df = spark.sql("SELECT * FROM rest.<database>.orders")
 df.show()
 ```
+![alt text](images/image.png)
