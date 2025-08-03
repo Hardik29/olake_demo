@@ -138,7 +138,7 @@ Direct sync to GCS is not supported, so Lakekeeper is used as an intermediary.
 
 ---
 
-### 6. Update the destination.json, if required
+### 6. Update the `destination.json`, if required
 
 ### 7. Sync Data to Google Cloud Storage (via Lakekeeper)
 
