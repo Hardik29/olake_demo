@@ -1,4 +1,3 @@
-
 ## OLake PostgreSQL to Google Cloud Storage via Lakekeeper
 This guide demonstrates syncing data from a PostgreSQL source (filess.io or any managed database) to Google Cloud Storage in Iceberg format using OLake and Lakekeeper, then querying with Spark on Dataproc.
 
@@ -107,20 +106,32 @@ docker run --rm \
 
 ### 5. Set Up Lakekeeper for Google Cloud Storage
 
-Direct sync to GCS is not supported, so Lakekeeper is used as an intermediary.
+Direct syncing to GCS is not supported, so Lakekeeper acts as an intermediary.
 
 1. Clone the Lakekeeper repository and start the service:
    ```bash
    git clone https://github.com/lakekeeper/lakekeeper
    cd lakekeeper/docker-compose
-   docker compose up -d
    ```
-2. Create a Google Cloud Storage account and a service account with the necessary permissions.
-3. In GCP Console: IAM → Service Accounts → Create Service Account → Manage Keys → Create Key (JSON) → Download and save the key.
-[text](readme.md) ![text](images/gcs.png)
-4. Go to [Lakekeeper UI](http://localhost:8181/ui/warehouse), select GCS, and upload your service account key (as file or paste JSON).
-![alt text](images/lakekeeper.png)
-5. If you encounter errors, ensure your service account has sufficient permissions related to goggle cloud storage.
+2. Before running `docker compose up`, open the `docker-compose.yaml` file and add:
+   ```bash
+   LAKEKEEPER__ENABLE_GCP_SYSTEM_CREDENTIALS=true
+   ```
+3. Start the services:
+   ```bash
+   docker compose up
+   ```
+4. After the services are running, open [http://localhost:8181](http://localhost:8181) in your browser. Add a warehouse by providing the warehouse name, bucket name, and your GCP service account key (you can generate this key in the GCP Console).
+5. In Google Cloud Console, go to IAM → Service Accounts, create a new service account, then go to Manage Keys → Create Key (JSON), and download the key file.
+   ![text](images/gcs.png)
+6. In the Lakekeeper UI ([http://localhost:8181/ui/warehouse](http://localhost:8181/ui/warehouse)), select GCS and upload your service account key (either as a file or by pasting the JSON).
+   ![alt text](images/lakekeeper.png)
+7. If you encounter errors, ensure your service account has the necessary permissions for Google Cloud Storage.
+8. To make Lakekeeper accessible from your Dataproc cluster, download ngrok and run:
+   ```
+   ngrok 8181
+   ```
+   This will expose your local Lakekeeper service to the public internet so it can be accessed by Dataproc for running Spark jobs.
 
 ---
 
@@ -143,19 +154,29 @@ docker run --rm \
 ### 8. Query Data with Spark on GCP Dataproc
 
 1. Create a Dataproc cluster with JupyterLab enabled.
-2. Open JupyterLab and start a PySpark or Spark SQL session.
+2. open the terminal
 
-#### Example: Create Spark Session in PySpark
-
-```python
+run 
+```bash
+pyspark --jars /lib/spark/jars/iceberg-spark-runtime-3.5_2.12-1.9.2.jar,/lib/spark/jars/gcs-connector-hadoop3-2.2.5-shaded.jar 
+```
+then run 
+```bash 
 from pyspark.sql import SparkSession
 
 spark = SparkSession.builder \
-    .appName("IcebergQuery") \
+    .appName("IcebergReadRESTCatalog") \
+    .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions") \
+    .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkCatalog") \
+    .config("spark.sql.catalog.spark_catalog.type", "rest") \
+    .config("spark.sql.catalog.spark_catalog.uri", "<ngrok url>/catalog") \
+    .config("spark.sql.catalog.spark_catalog.warehouse", "olake_warehouse") \
+    .config("spark.sql.catalog.spark_catalog.io-impl", "org.apache.iceberg.hadoop.HadoopFileIO") \
     .getOrCreate()
 
-# Query the Iceberg table
-df = spark.sql("SELECT * FROM rest.<database>.orders")
-df.show()
+spark.sql("SHOW NAMESPACES IN spark_catalog").show()
+spark.sql("SHOW TABLES IN spark_catalog.iceberg_db").show()
+spark.sql("SELECT * FROM spark_catalog.iceberg_db.orders").show()
 ```
+
 ![alt text](images/image.png)
