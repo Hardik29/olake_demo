@@ -91,7 +91,7 @@ Create configuration files in your project directory.
 Generate the `streams.json` file by discovering the schema from your Postgres source.
 
 ```bash
-docker run --rm \
+docker run --pull=always \
   -v "/absolute/path/to/config:/mnt/config" \
   olakego/source-postgres:latest \
   discover \
@@ -100,7 +100,7 @@ docker run --rm \
 
 **(Optional) Test the connection:**
 ```bash
-docker run --rm \
+docker run --pull=always \
   -v "/absolute/path/to/config:/mnt/config" \
   olakego/source-postgres:latest \
   check \
@@ -151,7 +151,7 @@ Ensure the configuration matches your Lakekeeper and GCS setup.
 ## 6. Sync Data to Google Cloud Storage (via Lakekeeper)
 
 ```bash
-docker run --rm \
+docker run --pull=always \
   -v "/absolute/path/to/config:/mnt/config" \
   olakego/source-postgres:latest \
   sync \
